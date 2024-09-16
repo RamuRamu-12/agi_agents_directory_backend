@@ -51,6 +51,8 @@ def agent_detail(request, id):
                     "overview": agent[11],
                     "key_features": agent[12],
                     "use_cases": agent[13],
+                    "tag":agent[16],
+                    "tagline":agent[9],
                     "details": {
                         "created_by": agent[14],
                         "category": agent[3],
@@ -61,6 +63,7 @@ def agent_detail(request, id):
                     },
                     "website_url": agent[7],
                     "preview_image": agent[17],
+                    "demo_video":agent[19],
                     "logo": agent[18],
                 }
                 return JsonResponse({'agent': agent_data})
@@ -122,7 +125,7 @@ def agent_create(request):
                     # URLs for approving and rejecting the agent
                     approve_url = f'{settings.SITE_URL}/api/admin/agent/{new_agent_id}/approve/'
                     reject_url = f'{settings.SITE_URL}/api/admin/agent/{new_agent_id}/reject/'
-                    modify_url = f'{settings.SITE_URL}/api/agent/{new_agent_id}/modify/'
+                    modify_url = f'http://18.143.174.1/api/agents_detail{new_agent_id}'
                     # Email content with all the agent details
                     email_content = f"""
                     <h3>New Agent Created</h3>
