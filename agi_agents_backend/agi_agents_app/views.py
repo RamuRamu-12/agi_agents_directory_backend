@@ -59,7 +59,7 @@ def agent_detail(request, id):
                         "industry": agent[4],
                         "pricing": agent[5],
                         "access": agent[15],
-                        # "date_added": agent[7].strftime('%Y-%m-%d'),
+                        "date_added": agent[20].strftime('%Y-%m-%d'),
                     },
                     "website_url": agent[7],
                     "preview_image": agent[17],
