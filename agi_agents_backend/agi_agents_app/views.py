@@ -132,7 +132,7 @@ def agent_create(request):
                 if new_agent_id:
                     # URLs for approving and rejecting the agent
                     
-                    modify_url= f'{settings.SITE_URL}/api/agents_detail{new_agent_id}'
+                    modify_url= f'http://localhost:4000/update/9'
                     
                     
                     
