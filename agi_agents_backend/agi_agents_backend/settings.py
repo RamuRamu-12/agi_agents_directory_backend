@@ -96,7 +96,7 @@ EMAIL_HOST_PASSWORD = 'btflusfrzljsaxob'
 
 # Default from email address
 DEFAULT_FROM_EMAIL = 'ramurangam12@gmail.com'  # Replace with your email
-ADMIN_EMAIL = 'rangamrammohan123@gmail.com'  # Replace with the admin email address
+ADMIN_EMAIL = 'gurakaparameshwerreddy@gmail.com'  # Replace with the admin email address
 
 
 # Password validation
