@@ -140,7 +140,7 @@ def agent_create(request):
                 if new_agent_id:
                     # URLs for approving and rejecting the agent
                     
-                    modify_url= f'http://localhost:4000/update/id'
+                    modify_url= f'http://localhost:4000/update/{new_agent_id}'
                     
                     
                     
