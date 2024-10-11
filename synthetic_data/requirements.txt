@@ -1,0 +1,5 @@
+vyzeai==0.0.25
+streamlit
+pandas
+openpyxl
+corsheaders
