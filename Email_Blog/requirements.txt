@@ -1,0 +1,16 @@
+vyzeai==0.0.25
+pydub
+streamlit
+moviepy
+pypandoc
+opencv-python-headless
+opencv-python
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+nltk
+tweepy
+beautifulsoup4
+youtube_transcript_api
+corsheaders
