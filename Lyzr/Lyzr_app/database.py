@@ -174,8 +174,8 @@ class PostgreSQLDB:
             return None
 
 
-#Agents table
-# Create agents table linked with environments
+    #Agents table
+    # Create agents table linked with environments, including 'tools' column
     def create_agents_table(self):
         try:
             conn = self.connect()
@@ -187,6 +187,7 @@ class PostgreSQLDB:
                     name VARCHAR(100) NOT NULL,
                     system_prompt TEXT,
                     agent_description TEXT,
+                    tools TEXT,  -- New 'tools' column
                     env_id INT REFERENCES environment(id) ON DELETE CASCADE
                 );
                 """
@@ -213,18 +214,19 @@ class PostgreSQLDB:
         except Exception as e:
             print(f"Error deleting agents table: {e}")
 
-    # Insert a new agent
-    def create_agent(self, name, system_prompt, agent_description, env_id):
+
+    # Insert a new agent, including 'tools'
+    def create_agent(self, name, system_prompt, agent_description, tools, env_id):
         try:
             conn = self.connect()
             if conn is not None:
                 cursor = conn.cursor()
                 query = """
-                INSERT INTO agents (name, system_prompt, agent_description, env_id)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO agents (name, system_prompt, agent_description, tools, env_id)
+                VALUES (%s, %s, %s, %s, %s)
                 RETURNING id;
                 """
-                cursor.execute(query, (name, system_prompt, agent_description, env_id))
+                cursor.execute(query, (name, system_prompt, agent_description, tools, env_id))
                 agent_id = cursor.fetchone()[0]
                 conn.commit()
                 cursor.close()
@@ -250,8 +252,8 @@ class PostgreSQLDB:
             print(f"Error reading agent: {e}")
             return None
 
-    # Update agent
-    def update_agent(self, agent_id, name=None, system_prompt=None, agent_description=None, env_id=None):
+    # Update agent, including 'tools'
+    def update_agent(self, agent_id, name=None, system_prompt=None, agent_description=None, tools=None, env_id=None):
         try:
             conn = self.connect()
             if conn is not None:
@@ -261,10 +263,11 @@ class PostgreSQLDB:
                 SET name = COALESCE(%s, name),
                     system_prompt = COALESCE(%s, system_prompt),
                     agent_description = COALESCE(%s, agent_description),
+                    tools = COALESCE(%s, tools),  -- Update 'tools' column
                     env_id = COALESCE(%s, env_id)
                 WHERE id = %s;
                 """
-                cursor.execute(query, (name, system_prompt, agent_description, env_id, agent_id))
+                cursor.execute(query, (name, system_prompt, agent_description, tools, env_id, agent_id))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -287,14 +290,13 @@ class PostgreSQLDB:
         except Exception as e:
             print(f"Error deleting agent: {e}")
 
-
-    #Getting all the agents
+    # Get all agents, including 'tools'
     def get_all_agents(self):
         try:
             conn = self.connect()
             if conn is not None:
                 cursor = conn.cursor()
-                query = "SELECT id, name, system_prompt, agent_description, env_id FROM agents;"
+                query = "SELECT id, name, system_prompt, agent_description, tools, env_id FROM agents;"  # Include 'tools'
                 cursor.execute(query)
                 agents = cursor.fetchall()
                 cursor.close()
@@ -303,7 +305,6 @@ class PostgreSQLDB:
         except Exception as e:
             print(f"Error retrieving agents: {e}")
             return None
-
 
 if __name__ == "__main__":
     db = PostgreSQLDB(dbname='uibmogli', user='uibmogli', password='8ogImHfL_1G249lXtM3k2EAIWTRDH2mX')
