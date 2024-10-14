@@ -43,7 +43,6 @@ def read_environment(request, environment_id):
             response_data = {
 
                 "features": [],  # Assuming no features are provided, keeping it empty
-                "tools": [],  # Assuming no tools are provided, keeping it empty
                 "llm_config": {
                     "provider": environment[2],  # model_vendor
                     "model": environment[4],  # model
@@ -144,7 +143,10 @@ def read_all_environments(request):
 
 
 
-#Agent Creation
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+# Create Agent
 @api_view(['POST'])
 def create_agent(request):
     try:
@@ -152,18 +154,21 @@ def create_agent(request):
         name = data.get('name')
         system_prompt = data.get('system_prompt')
         agent_description = data.get('agent_description')
+        tools = data.get('tools')  # Handle tools from the request
         env_id = data.get('env_id')
 
         if not env_id:
             return Response({"error": "Environment ID is required"}, status=400)
 
-        agent_id = db.create_agent(name, system_prompt, agent_description, env_id)
+        # Create the agent in the database
+        agent_id = db.create_agent(name, system_prompt, agent_description, tools, env_id)
+
         return Response({"agent_id": agent_id}, status=201)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
 
-#Read agent
+# Read Agent by ID
 @api_view(['GET'])
 def read_agent(request, agent_id):
     try:
@@ -174,13 +179,15 @@ def read_agent(request, agent_id):
                 "name": agent[1],
                 "system_prompt": agent[2],
                 "agent_description": agent[3],
-                "env_id": agent[4]
+                "tools": agent[4],  # Include tools in the response
+                "env_id": agent[5]
             }, status=200)
         return Response({"error": "Agent not found"}, status=404)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
-# Update agent
+
+# Update Agent by ID
 @api_view(['POST'])
 def update_agent(request, agent_id):
     try:
@@ -188,32 +195,32 @@ def update_agent(request, agent_id):
         name = data.get('name')
         system_prompt = data.get('system_prompt')
         agent_description = data.get('agent_description')
+        tools = data.get('tools')  # Handle tools update
         env_id = data.get('env_id')
 
         # Update agent in the database
-        db.update_agent(agent_id, name, system_prompt, agent_description, env_id)
-        return Response({"message": f"Agent with ID {agent_id} updated successfully."}, status=200)
+        db.update_agent(agent_id, name, system_prompt, agent_description, tools, env_id)
 
+        return Response({"message": f"Agent with ID {agent_id} updated successfully."}, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
 
-# Delete agent by ID
+# Delete Agent by ID
 @api_view(['GET'])
 def delete_agent(request, agent_id):
     try:
         db.delete_agent(agent_id)
         return Response({"message": f"Agent with ID {agent_id} deleted successfully."}, status=204)
-
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
-#Read all the agents
-from rest_framework.decorators import api_view
+
+# Read all Agents
 @api_view(['GET'])
 def read_all_agents(request):
     try:
-        # Assuming `db.get_all_agents()` is a method that fetches all agents from the database
+        # Fetch all agents from the database
         agents = db.get_all_agents()
 
         # Structure the agents' data for JSON response
@@ -223,7 +230,8 @@ def read_all_agents(request):
                 "name": agent[1],
                 "system_prompt": agent[2],
                 "agent_description": agent[3],
-                "env_id": agent[4]
+                "tools": agent[4],  # Include tools in the response
+                "env_id": agent[5]
             }
             for agent in agents
         ]
@@ -231,7 +239,6 @@ def read_all_agents(request):
         return Response({"agents": agents_data}, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
-
 
 
 #Creation of the openai environment.
